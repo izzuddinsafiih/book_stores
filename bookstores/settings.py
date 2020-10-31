@@ -14,6 +14,10 @@ import os
 import django_heroku
 import dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,9 +30,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '2li^%kx_yuz=p7ypgl*d##ci(gxd2$)j@sj(3-z1je3$!jos_r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', '') == 'True'
 
-ALLOWED_HOSTS = ['https://bookstoresizzuddin.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'https://bookstoresizzuddin.herokuapp.com']
 
 
 # Application definition
@@ -40,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
     'main',
     'rest_framework',
 ]
@@ -81,10 +86,9 @@ WSGI_APPLICATION = 'bookstores.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600)
 }
-
-
-django_heroku.settings(locals(), test_runner=False)
-del DATABASES['default']['OPTIONS']['sslmode']
+if not DEBUG:
+    django_heroku.settings(locals(), test_runner=False)
+    del DATABASES['default']['OPTIONS']['sslmode']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
